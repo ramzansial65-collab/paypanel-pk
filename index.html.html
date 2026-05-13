@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayPanel PK — Pakistani Freelancer Payment Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --green: #00C853;
+    --green-dark: #009624;
+    --green-light: #b9f6ca;
+    --bg: #0a0f0d;
+    --bg2: #111a14;
+    --bg3: #182118;
+    --card: #131e14;
+    --card2: #1a2b1c;
+    --border: rgba(0,200,83,0.12);
+    --border2: rgba(0,200,83,0.25);
+    --text: #e8f5e9;
+    --text2: #8fa892;
+    --text3: #4a6b50;
+    --fiverr: #1dbf73;
+    --upwork: #14a800;
+    --x: #9ca3af;
+    --danger: #ff5252;
+    --warning: #ffab40;
+    --success: #69f0ae;
+    --font: 'Sora', sans-serif;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg2); } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ===== LOGIN PAGE ===== */
+  #login-page {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; position: relative; overflow: hidden;
+  }
+  .login-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(0,200,83,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 90% 80%, rgba(0,150,36,0.1) 0%, transparent 60%),
+                var(--bg);
+  }
+  .grid-lines {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(0,200,83,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,200,83,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .login-box {
+    position: relative; z-index: 1;
+    width: 420px; max-width: 95vw;
+    background: rgba(19,30,20,0.8);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    backdrop-filter: blur(20px);
+    animation: fadeUp 0.6s ease;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  .login-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; justify-content: center; }
+  .logo-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #000; }
+  .login-logo-text { font-size: 22px; font-weight: 700; color: var(--text); }
+  .login-logo-text span { color: var(--green); }
+  .login-tagline { text-align: center; font-size: 13px; color: var(--text2); margin-bottom: 2rem; line-height: 1.6; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.5px; }
+  .form-group input {
+    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+    background: var(--bg3); border: 1px solid var(--border2); color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none; transition: border 0.2s;
+  }
+  .form-group input:focus { border-color: var(--green); }
+  .form-group input::placeholder { color: var(--text3); }
+  .btn-login {
+    width: 100%; padding: 13px; border-radius: var(--radius-sm);
+    background: var(--green); color: #000; font-family: var(--font);
+    font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+    transition: all 0.2s; margin-top: 0.5rem;
+  }
+  .btn-login:hover { background: #00e676; transform: translateY(-1px); }
+  .login-divider { text-align: center; font-size: 12px; color: var(--text3); margin: 1.25rem 0; }
+  .platform-icons { display: flex; gap: 12px; justify-content: center; }
+  .platform-icon-btn {
+    flex: 1; padding: 10px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--text2); font-size: 12px; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .platform-icon-btn:hover { border-color: var(--green); color: var(--text); }
+  .login-footer { text-align: center; margin-top: 1.5rem; font-size: 12px; color: var(--text3); }
+  .login-footer a { color: var(--green); cursor: pointer; text-decoration: none; }
+  .demo-hint { background: rgba(0,200,83,0.08); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 11px; color: var(--text2); text-align: center; margin-top: 1rem; }
+
+  /* ===== MAIN APP ===== */
+  #app-page { display: none; }
+  #app-page.active { display: flex; }
+  .sidebar {
+    width: 240px; min-height: 100vh; background: var(--bg2);
+    border-right: 1px solid var(--border); padding: 1.5rem 1rem;
+    display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0;
+    z-index: 100; transition: transform 0.3s;
+  }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; padding: 0 0.5rem; }
+  .sidebar-logo .logo-icon { width: 36px; height: 36px; border-radius: 10px; font-size: 16px; }
+  .sidebar-logo-text { font-size: 17px; font-weight: 700; }
+  .sidebar-logo-text span { color: var(--green); }
+  .nav-section-title { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; padding: 0 0.75rem; margin: 1rem 0 0.5rem; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: var(--radius-sm); font-size: 13px; color: var(--text2);
+    cursor: pointer; transition: all 0.2s; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(0,200,83,0.12); color: var(--green); font-weight: 500; }
+  .nav-item i { width: 18px; text-align: center; font-size: 15px; }
+  .nav-badge { margin-left: auto; background: var(--green); color: #000; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .sidebar-footer { margin-top: auto; padding: 0.75rem; }
+  .user-pill { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--green-dark)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #000; flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 10px; color: var(--text3); }
+  .logout-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; transition: color 0.2s; }
+  .logout-btn:hover { color: var(--danger); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content { margin-left: 240px; flex: 1; min-height: 100vh; }
+  .topnav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+  .topnav-title { font-size: 16px; font-weight: 600; }
+  .topnav-right { display: flex; align-items: center; gap: 12px; }
+  .pkr-badge { background: rgba(0,200,83,0.1); border: 1px solid var(--border2); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--green); font-weight: 500; }
+  .notif-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); position: relative; font-size: 15px; }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: var(--green); border-radius: 50%; border: 2px solid var(--bg2); }
+  .content-area { padding: 2rem; }
+
+  /* ===== SECTIONS ===== */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ===== METRICS GRID ===== */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 2rem; }
+  .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; position: relative; overflow: hidden; }
+  .metric-card::before { content: ''; position: absolute; top: 0; right: 0; width: 60px; height: 60px; border-radius: 50%; opacity: 0.06; transform: translate(20px, -20px); }
+  .metric-card.green::before { background: var(--green); }
+  .metric-card.blue::before { background: #40c4ff; }
+  .metric-card.orange::before { background: var(--warning); }
+  .metric-card.red::before { background: var(--danger); }
+  .metric-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .metric-value { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .metric-sub { font-size: 11px; display: flex; align-items: center; gap: 4px; }
+  .metric-sub.up { color: var(--success); }
+  .metric-sub.down { color: var(--danger); }
+  .metric-sub.neutral { color: var(--text3); }
+
+  /* ===== PLATFORM CARDS ===== */
+  .platforms-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 2rem; }
+  .plat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: border-color 0.2s; }
+  .plat-card:hover { border-color: var(--border2); }
+  .plat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .plat-info { display: flex; align-items: center; gap: 10px; }
+  .plat-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+  .plat-name { font-size: 14px; font-weight: 600; }
+  .plat-status { font-size: 10px; display: flex; align-items: center; gap: 4px; }
+  .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .plat-connect-btn { font-size: 10px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: none; color: var(--green); cursor: pointer; transition: all 0.2s; }
+  .plat-connect-btn:hover { background: rgba(0,200,83,0.1); }
+  .plat-amount { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .plat-meta { font-size: 11px; color: var(--text3); margin-bottom: 1rem; }
+  .progress-bar { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+  .plat-bottom { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text3); }
+  .withdraw-mini { font-size: 11px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border2); background: none; color: var(--text2); cursor: pointer; transition: all 0.2s; }
+  .withdraw-mini:hover { background: rgba(0,200,83,0.08); color: var(--green); }
+
+  /* ===== CHARTS ROW ===== */
+  .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 2rem; }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .chart-card h3 { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 1rem; }
+  .chart-wrap { position: relative; }
+
+  /* ===== TRANSACTIONS ===== */
+  .txn-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .txn-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+  .txn-header h3 { font-size: 14px; font-weight: 600; }
+  .txn-filters { display: flex; gap: 8px; }
+  .filter-btn { font-size: 11px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text3); cursor: pointer; transition: all 0.2s; }
+  .filter-btn.active, .filter-btn:hover { border-color: var(--green); color: var(--green); background: rgba(0,200,83,0.06); }
+  .txn-table { width: 100%; border-collapse: collapse; }
+  .txn-table th { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 1.5rem; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+  .txn-table td { padding: 12px 1.5rem; font-size: 13px; border-bottom: 1px solid rgba(0,200,83,0.05); vertical-align: middle; }
+  .txn-table tr:last-child td { border-bottom: none; }
+  .txn-table tr:hover td { background: rgba(0,200,83,0.03); }
+  .platform-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: 500; }
+  .tag-fiverr { background: rgba(29,191,115,0.12); color: #1dbf73; }
+  .tag-upwork { background: rgba(20,168,0,0.12); color: #14a800; }
+  .tag-x { background: rgba(156,163,175,0.12); color: #9ca3af; }
+  .status-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+  .status-received { background: rgba(105,240,174,0.1); color: var(--success); }
+  .status-pending { background: rgba(255,171,64,0.1); color: var(--warning); }
+  .status-processing { background: rgba(64,196,255,0.1); color: #40c4ff; }
+  .amount-credit { color: var(--success); font-weight: 600; }
+
+  /* ===== WITHDRAW SECTION ===== */
+  .withdraw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 2rem; }
+  .method-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; cursor: pointer; transition: all 0.2s; }
+  .method-card:hover, .method-card.selected { border-color: var(--green); background: rgba(0,200,83,0.05); }
+  .method-icon { font-size: 28px; margin-bottom: 1rem; }
+  .method-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .method-desc { font-size: 11px; color: var(--text3); line-height: 1.5; margin-bottom: 1rem; }
+  .method-fees { font-size: 11px; color: var(--text2); }
+  .method-fees span { color: var(--success); font-weight: 500; }
+  .method-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 8px; }
+  .tag-best { background: rgba(0,200,83,0.15); color: var(--green); }
+  .tag-fast { background: rgba(64,196,255,0.15); color: #40c4ff; }
+  .withdraw-form { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
+  .withdraw-form h3 { font-size: 14px; font-weight: 600; margin-bottom: 1.25rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1rem; }
+  .field label { display: block; font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 10px 14px; background: var(--bg3);
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    color: var(--text); font-family: var(--font); font-size: 13px; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--green); }
+  .field select option { background: var(--bg3); }
+  .btn-withdraw { padding: 12px 28px; background: var(--green); color: #000; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-withdraw:hover { background: #00e676; }
+  .pkr-preview { background: rgba(0,200,83,0.06); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .pkr-preview .label { font-size: 11px; color: var(--text3); }
+  .pkr-preview .val { font-size: 20px; font-weight: 700; color: var(--green); }
+
+  /* ===== PROFILE SECTION ===== */
+  .profile-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+  .profile-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; }
+  .profile-avatar-big { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--green-dark)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #000; margin: 0 auto 1rem; }
+  .profile-name-big { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .profile-title { font-size: 12px; color: var(--text3); margin-bottom: 1.5rem; }
+  .stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-mini { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px; text-align: center; }
+  .stat-mini .val { font-size: 18px; font-weight: 700; color: var(--green); }
+  .stat-mini .lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  .settings-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .settings-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 1.25rem; color: var(--text2); }
+  .settings-field { margin-bottom: 1rem; }
+  .settings-field label { display: block; font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+  .settings-field input { width: 100%; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; }
+  .settings-field input:focus { border-color: var(--green); }
+  .btn-save { padding: 10px 24px; background: var(--green); color: #000; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-save:hover { background: #00e676; }
+  .connected-accounts { margin-top: 1.5rem; }
+  .account-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .account-row:last-child { border-bottom: none; }
+  .account-left { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .toggle { width: 36px; height: 20px; background: var(--bg3); border-radius: 10px; position: relative; cursor: pointer; transition: background 0.2s; }
+  .toggle.on { background: var(--green); }
+  .toggle::after { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* ===== GUIDE SECTION ===== */
+  .guide-steps { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .guide-step { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,200,83,0.12); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green); flex-shrink: 0; }
+  .step-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .step-content p { font-size: 12px; color: var(--text3); line-height: 1.6; }
+  .step-content .step-tip { font-size: 11px; color: var(--green); margin-top: 6px; background: rgba(0,200,83,0.06); padding: 5px 10px; border-radius: var(--radius-sm); display: inline-block; }
+  .section-heading { font-size: 20px; font-weight: 700; margin-bottom: 0.25rem; }
+  .section-sub { font-size: 13px; color: var(--text3); margin-bottom: 1.5rem; }
+
+  /* ===== MOBILE ===== */
+  .hamburger { display: none; }
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-240px); }
+    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.5); }
+    .main-content { margin-left: 0; }
+    .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--bg3); border: 1px solid var(--border); cursor: pointer; color: var(--text2); font-size: 16px; }
+    .metrics-grid { grid-template-columns: repeat(2,1fr); }
+    .platforms-row { grid-template-columns: 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+    .withdraw-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .profile-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== TOAST ===== */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--card2); border: 1px solid var(--green); border-radius: var(--radius-sm); padding: 12px 20px; font-size: 13px; color: var(--text); z-index: 9999; transform: translateY(60px); opacity: 0; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast i { color: var(--green); }
+
+  /* ===== OVERLAY ===== */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; }
+  .overlay.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="login-page" class="page active">
+  <div class="login-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">₨</div>
+      <div class="login-logo-text">Pay<span>Panel</span> PK</div>
+    </div>
+    <p class="login-tagline">Pakistani freelancers ke liye ek jagah sab payments track karein — Fiverr, Upwork, X se.</p>
+    <div class="form-group">
+      <label>EMAIL YA USERNAME</label>
+      <input type="email" id="login-email" placeholder="aapka@email.com" value="demo@paypanelpk.com">
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" id="login-pass" placeholder="••••••••" value="demo1234">
+    </div>
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fa fa-sign-in-alt" style="margin-right:6px;"></i>Dashboard Kholein
+    </button>
+    <div class="login-divider">— ya seedha login karein —</div>
+    <div class="platform-icons">
+      <button class="platform-icon-btn" onclick="doLogin()"><i class="fa-solid fa-briefcase" style="color:#1dbf73;"></i> Fiverr</button>
+      <button class="platform-icon-btn" onclick="doLogin()"><i class="fa-solid fa-circle" style="color:#14a800;"></i> Upwork</button>
+      <button class="platform-icon-btn" onclick="doLogin()"><i class="fa-brands fa-x-twitter"></i> X / Twitter</button>
+    </div>
+    <div class="demo-hint">
+      <i class="fa fa-info-circle"></i> Demo mode: demo@paypanelpk.com / demo1234
+    </div>
+    <div class="login-footer">
+      Nayi account? <a onclick="doLogin()">Register karein</a> &nbsp;·&nbsp; <a>Password bhool gaye?</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OVERLAY FOR MOBILE ===== -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app-page" class="page">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon" style="width:36px;height:36px;border-radius:10px;font-size:14px;">₨</div>
+      <div class="sidebar-logo-text">Pay<span>Panel</span> PK</div>
+    </div>
+    <div class="nav-section-title">Main</div>
+    <div class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa fa-chart-pie"></i> Dashboard</div>
+    <div class="nav-item" onclick="showSection('transactions', this)"><i class="fa fa-list"></i> Transactions <span class="nav-badge">47</span></div>
+    <div class="nav-item" onclick="showSection('withdraw', this)"><i class="fa fa-arrow-down-to-bracket"></i> Withdraw</div>
+    <div class="nav-section-title">Account</div>
+    <div class="nav-item" onclick="showSection('profile', this)"><i class="fa fa-user"></i> Profile</div>
+    <div class="nav-item" onclick="showSection('guide', this)"><i class="fa fa-book-open"></i> Payment Guide</div>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Ali Raza</div>
+          <div class="user-role">Freelancer · PKR 7.67L</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Logout"><i class="fa fa-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <div class="topnav">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="hamburger" onclick="toggleSidebar()"><i class="fa fa-bars"></i></div>
+        <span class="topnav-title" id="topnav-title">Dashboard</span>
+      </div>
+      <div class="topnav-right">
+        <div class="pkr-badge"><i class="fa fa-rotate" style="font-size:10px;margin-right:4px;"></i>1 USD = 278.5 PKR</div>
+        <div class="notif-btn"><i class="fa fa-bell"></i><div class="notif-dot"></div></div>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- DASHBOARD SECTION -->
+      <div class="section active" id="sec-dashboard">
+        <div class="metrics-grid">
+          <div class="metric-card green">
+            <div class="metric-label"><i class="fa fa-wallet"></i> Kul Kamai (Is Maah)</div>
+            <div class="metric-value">$3,240</div>
+            <div class="metric-sub up"><i class="fa fa-arrow-trend-up"></i> +12% pichle maah se</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-label"><i class="fa fa-clock"></i> Pending Amount</div>
+            <div class="metric-value">$480</div>
+            <div class="metric-sub neutral">3 orders baaqi hain</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-label"><i class="fa fa-circle-check"></i> Mila Hua Paisa</div>
+            <div class="metric-value">$2,760</div>
+            <div class="metric-sub up"><i class="fa fa-rupee-sign"></i> 7,67,660 PKR</div>
+          </div>
+          <div class="metric-card red">
+            <div class="metric-label"><i class="fa fa-briefcase"></i> Total Orders</div>
+            <div class="metric-value">47</div>
+            <div class="metric-sub up"><i class="fa fa-arrow-trend-up"></i> +5 is haftay</div>
+          </div>
+        </div>
+
+        <div class="platforms-row">
+          <div class="plat-card">
+            <div class="plat-header">
+              <div class="plat-info">
+                <div class="plat-icon" style="background:rgba(29,191,115,0.15);">
+                  <i class="fa-solid fa-briefcase" style="color:#1dbf73;font-size:18px;"></i>
+                </div>
+                <div>
+                  <div class="plat-name">Fiverr</div>
+                  <div class="plat-status" style="color:#1dbf73;"><div class="dot-live"></div> Connected</div>
+                </div>
+              </div>
+              <button class="withdraw-mini" onclick="showSection('withdraw', document.querySelector('[onclick*=withdraw]'))">Withdraw</button>
+            </div>
+            <div class="plat-amount" style="color:#1dbf73;">$1,850</div>
+            <div class="plat-meta">26 orders · Is maah</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:57%;background:#1dbf73;"></div></div>
+            <div class="plat-bottom"><span>57% of total</span><span>Payoneer / Paypal</span></div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-header">
+              <div class="plat-info">
+                <div class="plat-icon" style="background:rgba(20,168,0,0.15);">
+                  <i class="fa-solid fa-circle-dot" style="color:#14a800;font-size:18px;"></i>
+                </div>
+                <div>
+                  <div class="plat-name">Upwork</div>
+                  <div class="plat-status" style="color:#14a800;"><div class="dot-live" style="background:#14a800;"></div> Connected</div>
+                </div>
+              </div>
+              <button class="withdraw-mini" onclick="showSection('withdraw', document.querySelector('[onclick*=withdraw]'))">Withdraw</button>
+            </div>
+            <div class="plat-amount" style="color:#14a800;">$1,120</div>
+            <div class="plat-meta">14 contracts · Is maah</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:35%;background:#14a800;"></div></div>
+            <div class="plat-bottom"><span>35% of total</span><span>Payoneer / Bank Wire</span></div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-header">
+              <div class="plat-info">
+                <div class="plat-icon" style="background:rgba(156,163,175,0.15);">
+                  <i class="fa-brands fa-x-twitter" style="color:#9ca3af;font-size:18px;"></i>
+                </div>
+                <div>
+                  <div class="plat-name">X / Twitter</div>
+                  <div class="plat-status" style="color:#9ca3af;"><div class="dot-live" style="background:#9ca3af;"></div> Connected</div>
+                </div>
+              </div>
+              <button class="withdraw-mini">Withdraw</button>
+            </div>
+            <div class="plat-amount" style="color:#9ca3af;">$270</div>
+            <div class="plat-meta">7 payouts · Monetization + Tips</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:8%;background:#9ca3af;"></div></div>
+            <div class="plat-bottom"><span>8% of total</span><span>Stripe (via Payoneer)</span></div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-card">
+            <h3><i class="fa fa-chart-bar" style="margin-right:6px;color:var(--green);"></i>Mahaana Kamai — Sab Platforms</h3>
+            <div class="chart-wrap" style="height:220px;">
+              <canvas id="mainChart"></canvas>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text3);">
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#1dbf73;margin-right:4px;"></span>Fiverr</span>
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#14a800;margin-right:4px;"></span>Upwork</span>
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#6b7280;margin-right:4px;"></span>X</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3><i class="fa fa-pie-chart" style="margin-right:6px;color:var(--green);"></i>Platform Hissa</h3>
+            <div class="chart-wrap" style="height:220px;">
+              <canvas id="donutChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Txns -->
+        <div class="txn-card">
+          <div class="txn-header">
+            <h3>Haaliya Transactions</h3>
+            <button class="filter-btn active" onclick="showSection('transactions', document.querySelector('[onclick*=transactions]'))">Sab dekho →</button>
+          </div>
+          <table class="txn-table">
+            <thead><tr><th>Kaam</th><th>Platform</th><th>Tarikh</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Logo Design Premium Pack</td><td><span class="platform-tag tag-fiverr"><i class="fa-solid fa-briefcase fa-xs"></i> Fiverr</span></td><td style="color:var(--text3);">13 May 2025</td><td class="amount-credit">+$120</td><td><span class="status-pill status-received">✓ Mila</span></td></tr>
+              <tr><td>React Dashboard Dev</td><td><span class="platform-tag tag-upwork"><i class="fa-solid fa-circle-dot fa-xs"></i> Upwork</span></td><td style="color:var(--text3);">12 May 2025</td><td class="amount-credit">+$450</td><td><span class="status-pill status-processing">⟳ Processing</span></td></tr>
+              <tr><td>X Creator Revenue Share</td><td><span class="platform-tag tag-x"><i class="fa-brands fa-x-twitter fa-xs"></i> X</span></td><td style="color:var(--text3);">11 May 2025</td><td class="amount-credit">+$38</td><td><span class="status-pill status-received">✓ Mila</span></td></tr>
+              <tr><td>SEO Content Writing x5</td><td><span class="platform-tag tag-fiverr"><i class="fa-solid fa-briefcase fa-xs"></i> Fiverr</span></td><td style="color:var(--text3);">10 May 2025</td><td class="amount-credit">+$75</td><td><span class="status-pill status-pending">⏳ Pending</span></td></tr>
+              <tr><td>Mobile App UI Design</td><td><span class="platform-tag tag-upwork"><i class="fa-solid fa-circle-dot fa-xs"></i> Upwork</span></td><td style="color:var(--text3);">9 May 2025</td><td class="amount-credit">+$280</td><td><span class="status-pill status-received">✓ Mila</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS SECTION -->
+      <div class="section" id="sec-transactions">
+        <div class="section-heading">Transactions</div>
+        <div class="section-sub">Aapke Fiverr, Upwork aur X se sab payments ek jagah</div>
+        <div class="txn-card">
+          <div class="txn-header">
+            <h3>All Transactions (47)</h3>
+            <div class="txn-filters">
+              <button class="filter-btn active">Sab</button>
+              <button class="filter-btn">Fiverr</button>
+              <button class="filter-btn">Upwork</button>
+              <button class="filter-btn">X</button>
+            </div>
+          </div>
+          <table class="txn-table">
+            <thead><tr><th>ID</th><th>Kaam / Description</th><th>Platform</th><th>Tarikh</th><th>Amount (USD)</th><th>PKR</th><th>Status</th></tr></thead>
+            <tbody id="txn-full-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WITHDRAW SECTION -->
+      <div class="section" id="sec-withdraw">
+        <div class="section-heading">Paisa Nikaalen</div>
+        <div class="section-sub">Pakistan mein safe tarike se USD receive karein</div>
+        <div class="withdraw-grid">
+          <div class="method-card selected" onclick="selectMethod(this)">
+            <div class="method-icon">💳</div>
+            <div class="method-name">Payoneer</div>
+            <div class="method-desc">Fiverr aur Upwork se seedha Payoneer mein aata hai. Pakistan mein bank transfer ya ATM se nikaalo.</div>
+            <div class="method-fees">Fees: <span>1-2%</span> · 2-3 din</div>
+            <div class="method-tag tag-best">⭐ Sabse Behtar</div>
+          </div>
+          <div class="method-card" onclick="selectMethod(this)">
+            <div class="method-icon">🏦</div>
+            <div class="method-name">Wise (TransferWise)</div>
+            <div class="method-desc">Best exchange rate milta hai. Pakistan mein bank transfer. Upwork se directly link ho sakta hai.</div>
+            <div class="method-fees">Fees: <span>0.5-1%</span> · 1-2 din</div>
+            <div class="method-tag tag-fast">⚡ Sab se Sasta</div>
+          </div>
+          <div class="method-card" onclick="selectMethod(this)">
+            <div class="method-icon">🔗</div>
+            <div class="method-name">Bank Wire Transfer</div>
+            <div class="method-desc">Seedha apne Pakistani bank account mein. HBL, UBL, MCB, Meezan sab supported hain.</div>
+            <div class="method-fees">Fees: <span>$5-15 flat</span> · 3-5 din</div>
+          </div>
+        </div>
+        <div class="pkr-preview">
+          <div><div class="label">Withdraw Amount</div><div style="font-size:16px;font-weight:600;margin-top:2px;" id="wd-usd-show">$500.00</div></div>
+          <div style="font-size:22px;color:var(--text3);">→</div>
+          <div style="text-align:right;"><div class="label">Aapko milega (PKR)</div><div class="val" id="wd-pkr-show">₨ 1,37,808</div></div>
+        </div>
+        <div class="withdraw-form">
+          <h3><i class="fa fa-paper-plane" style="color:var(--green);margin-right:8px;"></i>Withdraw Request</h3>
+          <div class="form-row">
+            <div class="field">
+              <label>AMOUNT (USD)</label>
+              <input type="number" id="wd-amount" value="500" min="1" oninput="updatePKR()">
+            </div>
+            <div class="field">
+              <label>PLATFORM SE</label>
+              <select id="wd-platform">
+                <option>Fiverr ($1,850 available)</option>
+                <option>Upwork ($1,120 available)</option>
+                <option>X / Twitter ($270 available)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>PAYONEER / BANK ACCOUNT</label>
+              <input type="text" placeholder="Payoneer ID ya Bank Account Number" value="PK-PAYONEER-****7842">
+            </div>
+            <div class="field">
+              <label>WITHDRAW METHOD</label>
+              <select>
+                <option>Payoneer → Pakistani Bank</option>
+                <option>Wise Transfer</option>
+                <option>Wire Transfer</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-withdraw" onclick="doWithdraw()">
+            <i class="fa fa-arrow-right" style="margin-right:6px;"></i>Withdraw Request Karein
+          </button>
+        </div>
+      </div>
+
+      <!-- PROFILE SECTION -->
+      <div class="section" id="sec-profile">
+        <div class="section-heading">Profile & Settings</div>
+        <div class="section-sub">Apna account aur connected platforms manage karein</div>
+        <div class="profile-grid">
+          <div>
+            <div class="profile-card" style="margin-bottom:16px;">
+              <div class="profile-avatar-big">AR</div>
+              <div class="profile-name-big">Ali Raza</div>
+              <div class="profile-title">Full-Stack Developer & Designer · Lahore, Pakistan</div>
+              <div class="stats-mini">
+                <div class="stat-mini"><div class="val">47</div><div class="lbl">Total Orders</div></div>
+                <div class="stat-mini"><div class="val">$3.2K</div><div class="lbl">Is Maah</div></div>
+                <div class="stat-mini"><div class="val">4.9★</div><div class="lbl">Rating</div></div>
+                <div class="stat-mini"><div class="val">2 sal</div><div class="lbl">Experience</div></div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h3>Connected Platforms</h3>
+              <div class="connected-accounts">
+                <div class="account-row">
+                  <div class="account-left"><i class="fa-solid fa-briefcase" style="color:#1dbf73;"></i> Fiverr</div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="account-row">
+                  <div class="account-left"><i class="fa-solid fa-circle-dot" style="color:#14a800;"></i> Upwork</div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="account-row">
+                  <div class="account-left"><i class="fa-brands fa-x-twitter"></i> X / Twitter</div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>Personal Information</h3>
+            <div class="settings-field"><label>FULL NAME</label><input value="Ali Raza"></div>
+            <div class="settings-field"><label>EMAIL</label><input value="ali.raza@gmail.com"></div>
+            <div class="settings-field"><label>PHONE (PAKISTAN)</label><input value="+92 300 1234567"></div>
+            <div class="settings-field"><label>CITY</label><input value="Lahore, Punjab"></div>
+            <div class="settings-field"><label>CNIC NUMBER</label><input value="35202-XXXXXXX-X" placeholder="Withdrawal ke liye zaruri"></div>
+            <div class="settings-field"><label>PAYONEER ID / EMAIL</label><input value="ali.raza.payoneer@gmail.com"></div>
+            <div class="settings-field"><label>BANK ACCOUNT (IBAN)</label><input value="PK36HABB0000123456789012" placeholder="HBL / UBL / Meezan IBAN"></div>
+            <button class="btn-save" onclick="showToast('Profile update ho gaya!')">
+              <i class="fa fa-save" style="margin-right:6px;"></i>Mehfooz Karein
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GUIDE SECTION -->
+      <div class="section" id="sec-guide">
+        <div class="section-heading">Payment Guide</div>
+        <div class="section-sub">Pakistani freelancers ke liye step-by-step tarika — Fiverr, Upwork, X se Pakistan mein paise kaise layein</div>
+        <div class="guide-steps">
+          <div class="guide-step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Payoneer Account Banayein (Free)</h4>
+              <p>Payoneer Pakistani freelancers ka sabse best dost hai. Fiverr aur Upwork dono directly Payoneer ko support karte hain. payoneer.com par account banayein — CNIC aur bank details chahiye hongi.</p>
+              <span class="step-tip">💡 Fiverr ka referral link use karein — dono ko bonus milta hai</span>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Fiverr → Payoneer Link Karein</h4>
+              <p>Fiverr account mein Settings → Billing → Add Payout Method → Payoneer select karein. Ek baar link hone ke baad har order ka paisa automatically Payoneer mein aayega. Minimum withdrawal $20 hai.</p>
+              <span class="step-tip">💡 14-day clearance period hota hai — order complete ke 14 din baad available hota hai</span>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Upwork → Payoneer ya Wise</h4>
+              <p>Upwork mein Settings → Get Paid → Add Payment Method. Payoneer ya Wise dono kaam karte hain. Wise mein exchange rate zyada acha milta hai — $1 = market rate milta hai bina hidden fees ke.</p>
+              <span class="step-tip">💡 Wise prefer karein agar amount $200+ hai — zyada faida milega</span>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>X / Twitter Monetization</h4>
+              <p>X Creator Revenue Share aur Tips ke liye Stripe account chahiye, jo Pakistan mein directly available nahi. Payoneer ka virtual US bank account use karein — Payoneer US routing number milta hai jo Stripe mein add kar sakte hain.</p>
+              <span class="step-tip">💡 Payoneer → Global Payment Service → US Bank Details — ye US account number Stripe mein use karein</span>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <h4>Payoneer se Pakistani Bank Mein Transfer</h4>
+              <p>Payoneer account mein paisa aane ke baad: Payoneer → Withdraw → Local Bank Transfer choose karein. Apna HBL, UBL, MCB, ya Meezan Bank account add karein. 1-3 business days mein PKR mein convert hokar aata hai.</p>
+              <span class="step-tip">💡 Meezan Bank best exchange rate deta hai Payoneer ke liye</span>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">6</div>
+            <div class="step-content">
+              <h4>Tax aur FBR — Remittance Certificate</h4>
+              <p>Pakistan mein freelancing income pe tax lagta hai agar $1200/year se zyada ho. Payoneer se Remittance Certificate download karein FBR ke liye. Freelancers ke liye SRO tax exemption bhi available hai — FBR portal check karein.</p>
+              <span class="step-tip">💡 Payoneer transactions ka record rakhein — annual FBR filing ke waqt zarurat padegi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa fa-circle-check"></i><span id="toast-msg">Kaam ho gaya!</span></div>
+
+<script>
+// ===== TRANSACTIONS DATA =====
+const txns = [
+  { id:'#F1042', desc:'Logo Design Premium Pack', platform:'fiverr', date:'13 May 2025', usd:120, status:'received' },
+  { id:'#U2891', desc:'React Dashboard Dev', platform:'upwork', date:'12 May 2025', usd:450, status:'processing' },
+  { id:'#X0071', desc:'X Creator Revenue Share', platform:'x', date:'11 May 2025', usd:38, status:'received' },
+  { id:'#F1039', desc:'SEO Content Writing x5', platform:'fiverr', date:'10 May 2025', usd:75, status:'pending' },
+  { id:'#U2888', desc:'Mobile App UI Design', platform:'upwork', date:'9 May 2025', usd:280, status:'received' },
+  { id:'#F1036', desc:'Social Media Kit', platform:'fiverr', date:'8 May 2025', usd:85, status:'received' },
+  { id:'#X0068', desc:'X Tips from Followers', platform:'x', date:'7 May 2025', usd:22, status:'received' },
+  { id:'#U2880', desc:'E-commerce Website', platform:'upwork', date:'5 May 2025', usd:650, status:'received' },
+  { id:'#F1030', desc:'Brand Identity Pack', platform:'fiverr', date:'4 May 2025', usd:200, status:'received' },
+  { id:'#F1028', desc:'WordPress Custom Theme', platform:'fiverr', date:'2 May 2025', usd:150, status:'received' },
+  { id:'#U2875', desc:'API Integration', platform:'upwork', date:'30 Apr 2025', usd:320, status:'received' },
+  { id:'#X0060', desc:'X Monetization Payout', platform:'x', date:'28 Apr 2025', usd:45, status:'received' },
+];
+const PLT = { fiverr:'<span class="platform-tag tag-fiverr"><i class="fa-solid fa-briefcase fa-xs"></i> Fiverr</span>', upwork:'<span class="platform-tag tag-upwork"><i class="fa-solid fa-circle-dot fa-xs"></i> Upwork</span>', x:'<span class="platform-tag tag-x"><i class="fa-brands fa-x-twitter fa-xs"></i> X</span>' };
+const ST = { received:'<span class="status-pill status-received">✓ Mila</span>', pending:'<span class="status-pill status-pending">⏳ Pending</span>', processing:'<span class="status-pill status-processing">⟳ Processing</span>' };
+function fillTxns() {
+  const b = document.getElementById('txn-full-body');
+  b.innerHTML = txns.map(t => `<tr><td style="color:var(--text3);font-size:11px;">${t.id}</td><td>${t.desc}</td><td>${PLT[t.platform]}</td><td style="color:var(--text3);">${t.date}</td><td class="amount-credit">+$${t.usd}</td><td style="color:var(--text2);">₨${(t.usd*278.5).toLocaleString('en-PK',{maximumFractionDigits:0})}</td><td>${ST[t.status]}</td></tr>`).join('');
+}
+
+// ===== NAVIGATION =====
+const titles = { dashboard:'Dashboard', transactions:'Transactions', withdraw:'Paisa Nikaalen', profile:'Profile & Settings', guide:'Payment Guide' };
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topnav-title').textContent = titles[name] || name;
+  if(name==='transactions') fillTxns();
+  closeSidebar();
+}
+
+// ===== LOGIN =====
+function doLogin() {
+  document.getElementById('login-page').classList.remove('active');
+  document.getElementById('app-page').classList.add('active');
+  initCharts();
+}
+function doLogout() {
+  document.getElementById('app-page').classList.remove('active');
+  document.getElementById('login-page').classList.add('active');
+}
+
+// ===== CHARTS =====
+let chartsInit = false;
+function initCharts() {
+  if(chartsInit) return; chartsInit = true;
+  setTimeout(() => {
+    new Chart(document.getElementById('mainChart'), {
+      type:'bar',
+      data:{
+        labels:['Jan','Feb','Mar','Apr','May'],
+        datasets:[
+          {label:'Fiverr',data:[900,1100,1000,1400,1850],backgroundColor:'rgba(29,191,115,0.8)',borderRadius:4},
+          {label:'Upwork',data:[700,800,750,1100,1120],backgroundColor:'rgba(20,168,0,0.8)',borderRadius:4},
+          {label:'X',data:[200,200,200,300,270],backgroundColor:'rgba(107,114,128,0.8)',borderRadius:4}
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{stacked:true,ticks:{color:'#4a6b50',font:{size:11}},grid:{color:'rgba(0,200,83,0.05)'},border:{color:'transparent'}},
+          y:{stacked:true,ticks:{color:'#4a6b50',font:{size:11},callback:v=>'$'+v},grid:{color:'rgba(0,200,83,0.05)'},border:{color:'transparent'}}
+        }
+      }
+    });
+    new Chart(document.getElementById('donutChart'), {
+      type:'doughnut',
+      data:{
+        labels:['Fiverr 57%','Upwork 35%','X 8%'],
+        datasets:[{data:[57,35,8],backgroundColor:['#1dbf73','#14a800','#4b5563'],borderWidth:0,hoverOffset:4}]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'68%',
+        plugins:{legend:{position:'bottom',labels:{color:'#8fa892',font:{size:11},boxWidth:10,padding:12}}}
+      }
+    });
+  }, 100);
+}
+
+// ===== WITHDRAW =====
+function updatePKR() {
+  const amt = parseFloat(document.getElementById('wd-amount').value)||0;
+  document.getElementById('wd-usd-show').textContent = '$' + amt.toFixed(2);
+  const pkr = Math.round(amt * 278.5 * 0.985);
+  document.getElementById('wd-pkr-show').textContent = '₨ ' + pkr.toLocaleString('en-PK');
+}
+function selectMethod(el) { document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected')); el.classList.add('selected'); }
+function doWithdraw() { showToast('Withdraw request submit ho gayi! 2-3 din mein PKR mein milega.'); }
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('active');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// ===== FILTER BUTTONS =====
+document.querySelectorAll('.txn-filters .filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.closest('.txn-filters').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
